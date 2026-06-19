@@ -56,5 +56,6 @@ jobs:
           files: dist/Life360.exe
           tag_name: latest
           name: Latest build
-          prerelease: true
+          prerelease: false
+          make_latest: true
           body: Automatically built from the latest commit on main.
