@@ -1,11 +1,9 @@
 name: Build Windows Executable
 
-# Build the Windows .exe automatically:
-#   - on every push of a version tag (e.g. v1.0.0) -> also creates a Release
-#     with the exe attached
-#   - manually via the "Run workflow" button -> uploads the exe as an artifact
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
   workflow_dispatch:
@@ -40,10 +38,23 @@ jobs:
           name: Life360-windows
           path: dist/Life360.exe
 
-      - name: Attach exe to release
+      # Tag push (e.g. v1.0.0) -> versioned release.
+      - name: Publish versioned release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: dist/Life360.exe
           name: Life360 ${{ github.ref_name }}
           generate_release_notes: true
+
+      # Push to main -> keep a rolling "latest" release with the newest exe,
+      # always downloadable at /releases/download/latest/Life360.exe
+      - name: Publish latest build
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Life360.exe
+          tag_name: latest
+          name: Latest build
+          prerelease: true
+          body: Automatically built from the latest commit on main.
