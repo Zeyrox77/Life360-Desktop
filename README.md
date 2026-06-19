@@ -8,7 +8,7 @@ app to your Windows PC and can be packaged as a single `.exe`.
 > **Prefer the browser version?**
 > There is also a **browser variant** (runs a local server you open in your
 > web browser) on the
-> [`browser` branch](https://github.com/Zeyrox77/Life360/tree/browser).
+> [`browser` branch](https://github.com/Zeyrox77/Life360-Desktop/tree/browser).
 
 > **Disclaimer**
 > This project uses Life360's unofficial, undocumented REST API. It is **not**
@@ -38,13 +38,13 @@ app to your Windows PC and can be packaged as a single `.exe`.
 
 ### Option A: Download the Windows executable (easiest)
 
-Grab `Life360.exe` from the [Releases page](https://github.com/Zeyrox77/Life360/releases),
+Grab `Life360.exe` from the [Releases page](https://github.com/Zeyrox77/Life360-Desktop/releases),
 double-click it, and sign in (see [Signing in](#signing-in)). No Python needed.
 
 ### Option B: Run from source
 
 ```bash
-git clone https://github.com/Zeyrox77/Life360.git
+git clone https://github.com/Zeyrox77/Life360-Desktop.git
 cd Life360
 python -m venv .venv
 # Windows:  .venv\Scripts\activate
