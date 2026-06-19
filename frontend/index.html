@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life360 Web Dashboard</title>
+    <meta name="description" content="A self-hosted web dashboard for viewing your Life360 circles, members and locations." />
+    <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;rect width='100' height='100' rx='22' fill='%236c2bd9'/&gt;&lt;text x='50' y='68' font-size='46' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'&gt;360&lt;/text&gt;&lt;/svg&gt;" />
+
+    <!-- Leaflet map library -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+
+    <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+    <!-- ============================ LOGIN VIEW ============================ -->
+    <section id="login-view" class="login-view">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="login-logo">360</div>
+                <h1>Life360 Web Dashboard</h1>
+                <p>View your Life360 circles, members and locations on the big screen.</p>
+            </div>
+
+            <!-- Access-token login -->
+            <form id="token-form" class="login-form" autocomplete="off">
+                <label for="token-input">Life360 access token</label>
+                <textarea id="token-input" rows="3" placeholder="Paste your access token here" required></textarea>
+
+                <label class="login-remember">
+                    <input id="remember-token" type="checkbox" checked />
+                    <span>Keep me signed in on this device</span>
+                </label>
+
+                <button type="submit" id="token-submit" class="btn-primary">
+                    <span class="btn-label">Sign in</span>
+                    <span class="btn-spinner" hidden></span>
+                </button>
+
+                <p id="login-error" class="login-error" role="alert" hidden></p>
+
+                <details class="login-help" open>
+                    <summary>How do I get my access token?</summary>
+                    <ol>
+                        <li>Open <a href="https://life360.com/login" target="_blank" rel="noopener">life360.com/login</a> in this browser and sign in normally (email + the code).</li>
+                        <li>Press <strong>F12</strong> to open Developer Tools and open the <strong>Network</strong> tab.</li>
+                        <li>Reload the page (<strong>F5</strong>) and click the request named <code>manage-membership</code>.</li>
+                        <li>Under <strong>Headers &rarr; Request Headers</strong>, scroll to <code>Cookie</code> and find <code>LIFE360_AUTH_TOKEN=</code>.</li>
+                        <li>Copy everything <em>after</em> the <code>=</code> up to (but not including) the next <code>;</code>, and paste it above.</li>
+                    </ol>
+                    <p class="login-help-tip">Tip: you can also paste the whole <code>LIFE360_AUTH_TOKEN=...;</code> chunk &mdash; it gets cleaned up automatically.</p>
+                </details>
+            </form>
+
+            <p class="login-disclaimer">
+                Your token is used only to talk to Life360 and is stored locally in this
+                browser (never sent to or kept on any server).
+            </p>
+        </div>
+    </section>
+
+    <!-- ========================= DASHBOARD VIEW ========================== -->
+    <section id="dashboard-view" class="dashboard-view" hidden>
+        <!-- Top bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div class="brand-mini">360</div>
+                <div class="circle-switcher">
+                    <button id="circle-switcher-btn" class="circle-switcher-btn">
+                        <span id="active-circle-name">Loading&hellip;</span>
+                        <span class="chevron">&#9662;</span>
+                    </button>
+                    <ul id="circle-list" class="circle-dropdown" hidden></ul>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span id="refresh-status" class="refresh-status"></span>
+                <button id="refresh-btn" class="btn-icon" title="Refresh now">&#x21bb;</button>
+                <div class="user-chip">
+                    <span id="user-name">&nbsp;</span>
+                    <button id="logout-btn" class="btn-text">Sign out</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-body">
+            <!-- Member sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Members</h2>
+                    <span id="member-count" class="badge">0</span>
+                </div>
+                <ul id="member-list" class="member-list"></ul>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h2>Places</h2>
+                        <span id="place-count" class="badge">0</span>
+                    </div>
+                    <ul id="place-list" class="place-list"></ul>
+                </div>
+            </aside>
+
+            <!-- Map -->
+            <main class="map-wrap">
+                <div id="map"></div>
+            </main>
+
+            <!-- Member detail panel -->
+            <aside id="detail-panel" class="detail-panel" hidden>
+                <button id="detail-close" class="detail-close" title="Close">&times;</button>
+                <div id="detail-content"></div>
+            </aside>
+        </div>
+    </section>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
